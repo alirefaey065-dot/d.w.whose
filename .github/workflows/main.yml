@@ -17,13 +17,6 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    # هذا هو التعديل السحري: إجبار النظام على استخدام جافا 17 كخيار افتراضي لكل العمليات
-    - name: Force Java 17 as default
-      run: |
-        sudo update-alternatives --set java /usr/lib/jvm/temurin-17-jdk-amd64/bin/java
-        sudo update-alternatives --set javac /usr/lib/jvm/temurin-17-jdk-amd64/bin/javac
-        java -version
-
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
@@ -36,5 +29,11 @@ jobs:
         pip install --user --upgrade buildozer cython virtualenv
 
     - name: Build APK with Buildozer
+      # نقوم بتعريف JAVA_HOME هنا ليتم استخدامه داخل عملية البناء مباشرة
+      env:
+        JAVA_HOME: /usr/lib/jvm/temurin-17-jdk-amd64
       run: |
+        # التأكد من الرابط الافتراضي للجافا (خيار أمان)
+        sudo update-alternatives --set java /usr/lib/jvm/temurin-17-jdk-amd64/bin/java
+        # تنفيذ البناء
         yes | buildozer android debug
