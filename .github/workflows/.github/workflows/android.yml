@@ -25,9 +25,10 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libsqlite3-dev lldd lld xclip
+        sudo apt-get install -y libsqlite3-dev lld xclip
         pip install --user --upgrade buildozer cython virtualenv
 
     - name: Build APK with Buildozer
       run: |
+        export JAVA_HOME='/usr/lib/jvm/temurin-17-jdk-amd64'
         yes | buildozer android debug
