@@ -6,9 +6,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # هنا نقوم بتثبيت الجافا 17 كمتغير بيئة دائم للـ Job بالكامل
-    env:
-      JAVA_HOME: /usr/lib/jvm/temurin-17-jdk-amd64
 
     steps:
     - name: Checkout code
@@ -20,10 +17,12 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Verify Java Version
+    # هذا هو التعديل السحري: إجبار النظام على استخدام جافا 17 كخيار افتراضي لكل العمليات
+    - name: Force Java 17 as default
       run: |
+        sudo update-alternatives --set java /usr/lib/jvm/temurin-17-jdk-amd64/bin/java
+        sudo update-alternatives --set javac /usr/lib/jvm/temurin-17-jdk-amd64/bin/javac
         java -version
-        echo "JAVA_HOME is set to: $JAVA_HOME"
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -38,6 +37,4 @@ jobs:
 
     - name: Build APK with Buildozer
       run: |
-        # التأكد مرة أخرى من المسار قبل البناء
-        export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
         yes | buildozer android debug
