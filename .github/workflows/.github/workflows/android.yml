@@ -25,10 +25,21 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y libsqlite3-dev lld xclip
+        sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
         pip install --user --upgrade buildozer cython virtualenv
 
     - name: Build APK with Buildozer
+      env:
+        # إجبار النظام على استخدام مسارات محددة لضمان عدم التعارض
+        JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.19-10/x64
+        ANDROID_SDK_HOME: /usr/local/lib/android/sdk
+        ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/27.3.13750724
       run: |
-        export JAVA_HOME='/usr/lib/jvm/temurin-17-jdk-amd64'
+        # تنظيف أي ملفات مؤقتة من محاولات سابقة
+        buildozer clean
+        
+        # التأكد من صلاحيات التنفيذ
+        chmod +x buildozer.spec
+        
+        # تنفيذ عملية البناء
         yes | buildozer android debug
