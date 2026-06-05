@@ -6,6 +6,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # هنا نقوم بتثبيت الجافا 17 كمتغير بيئة دائم للـ Job بالكامل
+    env:
+      JAVA_HOME: /usr/lib/jvm/temurin-17-jdk-amd64
 
     steps:
     - name: Checkout code
@@ -16,6 +19,11 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '17'
+
+    - name: Verify Java Version
+      run: |
+        java -version
+        echo "JAVA_HOME is set to: $JAVA_HOME"
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -29,7 +37,7 @@ jobs:
         pip install --user --upgrade buildozer cython virtualenv
 
     - name: Build APK with Buildozer
-      env:
-        JAVA_HOME: /usr/lib/jvm/temurin-17-jdk-amd64
       run: |
+        # التأكد مرة أخرى من المسار قبل البناء
+        export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
         yes | buildozer android debug
