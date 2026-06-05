@@ -29,11 +29,19 @@ jobs:
         pip install --user --upgrade buildozer cython virtualenv
 
     - name: Build APK with Buildozer
-      # نقوم بتعريف JAVA_HOME هنا ليتم استخدامه داخل عملية البناء مباشرة
-      env:
-        JAVA_HOME: /usr/lib/jvm/temurin-17-jdk-amd64
       run: |
-        # التأكد من الرابط الافتراضي للجافا (خيار أمان)
+        # 1. مسح أي JAVA_HOME قديم قد يسبب تضارباً
+        unset JAVA_HOME
+        
+        # 2. تعيين المسار الجديد لجافا 17
+        export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
+        
+        # 3. إجبار النظام على استخدام جافا 17 (java و javac)
         sudo update-alternatives --set java /usr/lib/jvm/temurin-17-jdk-amd64/bin/java
-        # تنفيذ البناء
+        sudo update-alternatives --set javac /usr/lib/jvm/temurin-17-jdk-amd64/bin/javac
+        
+        # 4. التأكد من النسخة الحالية
+        java -version
+        
+        # 5. تشغيل البناء
         yes | buildozer android debug
